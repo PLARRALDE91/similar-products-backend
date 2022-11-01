@@ -92,7 +92,6 @@ public class ProductDataProviderTest extends BaseTest {
         ProductDTO productDTO = getSampleProductDTO();
         Mockito.when(circuitBreaker.executeCallable(any())).thenReturn(productDTO);
         assertEquals(productDTO, dataProvider.getProductById("213213"));
-        assertEquals(1, 0);
     }
 
     @Test
