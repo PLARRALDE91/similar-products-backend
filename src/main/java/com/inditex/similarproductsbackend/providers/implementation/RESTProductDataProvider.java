@@ -3,6 +3,7 @@ package com.inditex.similarproductsbackend.providers.implementation;
 import com.inditex.similarproductsbackend.dto.ProductDTO;
 import com.inditex.similarproductsbackend.exception.ProductDataProviderException;
 import com.inditex.similarproductsbackend.providers.contract.ProductDataProvider;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,11 +20,15 @@ import java.util.List;
 @Slf4j
 public class RESTProductDataProvider implements ProductDataProvider {
 
-    @Autowired
-    private RestTemplate restClient;
+    private final RestTemplate restClient;
 
     @Value("${repository.baseUrl}")
+    @Setter
     private String baseUrl;
+
+    public RESTProductDataProvider(RestTemplate restClient) {
+        this.restClient = restClient;
+    }
 
     @Override
     public ProductDTO getProductById(String productId) throws ProductDataProviderException {
