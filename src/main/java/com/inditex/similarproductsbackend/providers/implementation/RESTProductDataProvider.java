@@ -42,22 +42,23 @@ public class RESTProductDataProvider implements ProductDataProvider {
         this.circuitBreaker = circuitBreaker;
     }
 
+    public ProductDTO getProduct (String productId) throws ProductDataProviderException {
+        String url = String.format("%s/%s", baseUrl, productId);
+        try {
+            ResponseEntity<ProductDTO> result = restClient.getForEntity(url, ProductDTO.class);
+            return result.getBody();
+        } catch (HttpClientErrorException.NotFound ex) {
+            return null;
+        } catch (RestClientException ex) {
+            log.error("Error getting product from repository system ({})", ex.getMessage());
+            throw new ProductDataProviderException("Exception getting product data from client", ex);
+        }
+    }
+
     @Override
     public ProductDTO getProductById(String productId) throws ProductDataProviderException {
-        Callable<ProductDTO> callable = () -> {
-            String url = String.format("%s/%s", baseUrl, productId);
-            try {
-                ResponseEntity<ProductDTO> result = restClient.getForEntity(url, ProductDTO.class);
-                return result.getBody();
-            } catch (HttpClientErrorException.NotFound ex) {
-                return null;
-            } catch (RestClientException ex) {
-                log.error("Error getting product from repository system ({})", ex.getMessage());
-                throw new ProductDataProviderException("Exception getting product data from client", ex);
-            }
-        };
         try {
-            return circuitBreaker.executeCallable(callable);
+            return circuitBreaker.executeCallable(() -> getProduct(productId));
         } catch (ProductDataProviderException e) {
             throw e;
         } catch (Exception ex) {
@@ -66,22 +67,23 @@ public class RESTProductDataProvider implements ProductDataProvider {
         }
     }
 
+    public List<String> getSimilarIds(String productId) throws ProductDataProviderException {
+        try {
+            String url = String.format("%s/%s/%s", baseUrl, productId, "similarids");
+            ResponseEntity<String[]> result = restClient.getForEntity(url, String[].class);
+            return result.getBody() != null ? Arrays.asList(result.getBody()) : null;
+        } catch (HttpClientErrorException.NotFound ex) {
+            return null;
+        } catch (RestClientException ex) {
+            log.error("Error getting similar product ids from repository system ({})", ex.getMessage());
+            throw new ProductDataProviderException("Exception getting similar product ids from client", ex);
+        }
+    }
+
     @Override
     public List<String> getSimilarProductIds(String productId) throws ProductDataProviderException {
-        Callable<List<String>> callable = () -> {
-            try {
-                String url = String.format("%s/%s/%s", baseUrl, productId, "similarids");
-                ResponseEntity<String[]> result = restClient.getForEntity(url, String[].class);
-                return result.getBody() != null ? Arrays.asList(result.getBody()) : null;
-            } catch (HttpClientErrorException.NotFound ex) {
-                return null;
-            } catch (RestClientException ex) {
-                log.error("Error getting similar product ids from repository system ({})", ex.getMessage());
-                throw new ProductDataProviderException("Exception getting similar product ids from client", ex);
-            }
-        };
         try {
-            return circuitBreaker.executeCallable(callable);
+            return circuitBreaker.executeCallable(() -> getSimilarIds(productId));
         } catch (ProductDataProviderException e) {
             throw e;
         } catch (Exception ex) {

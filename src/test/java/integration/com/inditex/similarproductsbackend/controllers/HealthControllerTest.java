@@ -1,7 +1,6 @@
 package integration.com.inditex.similarproductsbackend.controllers;
 
 import com.inditex.similarproductsbackend.controllers.HealthController;
-import com.inditex.similarproductsbackend.services.contract.HealthService;
 import com.inditex.similarproductsbackend.services.implementation.BasicHealthService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
