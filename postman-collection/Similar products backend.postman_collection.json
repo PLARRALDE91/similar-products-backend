@@ -29,6 +29,32 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Similar Products",
+			"item": [
+				{
+					"name": "Get Similar products by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/product/1/similar",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"product",
+								"1",
+								"similar"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
