@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.inditex.similarproductsbackend.annotation.Generated;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -21,6 +22,7 @@ import java.util.List;
 @ComponentScan("com.inditex.similarproductsbackend")
 @PropertySource("classpath:application-dev.properties")
 @EnableScheduling
+@Generated
 public class WebContext implements WebMvcConfigurer {
 
     @Bean

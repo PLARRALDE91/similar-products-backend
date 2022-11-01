@@ -9,6 +9,7 @@ import com.inditex.similarproductsbackend.services.contract.ProductsService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ public class ProductsServiceImplementation implements ProductsService {
                 throw new ProductNotFoundException();
             }
             List<String> similarProductIds = productDataProvider.getSimilarProductIds(productId);
-            return similarProductIds.stream()
+            List<ProductDTO> enrichedList = similarProductIds.stream()
                     .map(id -> {
                         try {
                             return getProductById(id);
@@ -46,6 +47,8 @@ public class ProductsServiceImplementation implements ProductsService {
                             return null;
                         }
                     }).collect(Collectors.toList());
+            enrichedList.removeAll(Collections.singleton(null));
+            return enrichedList;
         } catch (ProductDataProviderException | ServiceException e) {
             throw new ServiceException(e);
         }

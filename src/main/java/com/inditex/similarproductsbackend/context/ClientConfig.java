@@ -1,5 +1,6 @@
 package com.inditex.similarproductsbackend.context;
 
+import com.inditex.similarproductsbackend.annotation.Generated;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Configuration
+@Generated
 public class ClientConfig {
 
     @Autowired
