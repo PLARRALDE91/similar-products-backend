@@ -2,7 +2,6 @@ package integration.com.inditex.similarproductsbackend.controllers;
 
 import com.inditex.similarproductsbackend.controllers.SimilarProductsController;
 import com.inditex.similarproductsbackend.dto.ProductDTO;
-import com.inditex.similarproductsbackend.dto.SimilarProductsResponseDTO;
 import com.inditex.similarproductsbackend.exception.ProductNotFoundException;
 import com.inditex.similarproductsbackend.exception.ServiceException;
 import com.inditex.similarproductsbackend.services.implementation.ProductsServiceImplementation;
@@ -17,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,18 +30,12 @@ public class SimilarProductsControllerTest extends BaseTest {
     private SimilarProductsController similarProductsController;
 
     @Test
-    public void testGetSimilarProductsDataProductNotFound() throws ServiceException, ProductNotFoundException {
-        Mockito.when(productsServiceImplementation.getSimilarProducts(any())).thenThrow(new ProductNotFoundException());
-        ResponseEntity<?> response = similarProductsController.getSimilarProductsData("213123");
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    }
-
-    @Test
     public void testGetSimilarProductsDataWithInternalError() throws ServiceException, ProductNotFoundException {
         Throwable exception = new ServiceException("service exception");
         Mockito.when(productsServiceImplementation.getSimilarProducts(any())).thenThrow(exception);
         ResponseEntity<?> response = similarProductsController.getSimilarProductsData("213123");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("true", response.getHeaders().get("error").get(0));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
@@ -52,7 +44,7 @@ public class SimilarProductsControllerTest extends BaseTest {
         Mockito.when(productsServiceImplementation.getSimilarProducts(any())).thenReturn(products);
         ResponseEntity<?> response = similarProductsController.getSimilarProductsData("213123");
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(products, ((SimilarProductsResponseDTO) Objects.requireNonNull(response.getBody())).getProducts());
+        assertEquals(products, response.getBody());
     }
 
 }

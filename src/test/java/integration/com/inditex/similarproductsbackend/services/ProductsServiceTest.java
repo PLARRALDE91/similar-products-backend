@@ -47,22 +47,12 @@ public class ProductsServiceTest extends BaseTest {
     public void testGetSimilarProductsWhenProviderThrowsException() throws ProductDataProviderException {
         ProductDTO productDTO = getSampleProductDTO();
         Throwable exception = new ProductDataProviderException("data exception");
-        Mockito.when(dataProvider.getProductById("21312")).thenReturn(productDTO);
         Mockito.when(dataProvider.getSimilarProductIds(any())).thenThrow(exception);
         assertThrows(ServiceException.class, () -> productsService.getSimilarProducts("21312"));
     }
 
     @Test
-    public void testGetSimilarProductsWhenUnexistingProvidedProduct() throws ProductDataProviderException {
-        Mockito.when(dataProvider.getProductById("21312")).thenReturn(null);
-        assertThrows(ProductNotFoundException.class, () -> productsService.getSimilarProducts("21312"));
-    }
-
-    @Test
     public void testGetSimilarProductsWhenUnexistingSimilarItem() throws ProductDataProviderException, ServiceException, ProductNotFoundException {
-        ProductDTO productDTO = getSampleProductDTO();
-        Mockito.when(dataProvider.getProductById("21312")).thenReturn(productDTO);
-        Mockito.when(dataProvider.getProductById("12345")).thenReturn(null);
         Mockito.when(dataProvider.getSimilarProductIds(any())).thenReturn(List.of("12345"));
         assertTrue(productsService.getSimilarProducts("21312").isEmpty());
     }

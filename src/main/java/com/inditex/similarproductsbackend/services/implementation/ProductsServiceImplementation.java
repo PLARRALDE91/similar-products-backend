@@ -1,8 +1,8 @@
 package com.inditex.similarproductsbackend.services.implementation;
 
+import com.google.common.collect.Lists;
 import com.inditex.similarproductsbackend.dto.ProductDTO;
 import com.inditex.similarproductsbackend.exception.ProductDataProviderException;
-import com.inditex.similarproductsbackend.exception.ProductNotFoundException;
 import com.inditex.similarproductsbackend.exception.ServiceException;
 import com.inditex.similarproductsbackend.providers.contract.ProductDataProvider;
 import com.inditex.similarproductsbackend.services.contract.ProductsService;
@@ -23,7 +23,6 @@ public class ProductsServiceImplementation implements ProductsService {
     }
 
     @Override
-    @Cacheable("products")
     public ProductDTO getProductById(String productId) throws ServiceException {
         try {
             return productDataProvider.getProductById(productId);
@@ -33,12 +32,11 @@ public class ProductsServiceImplementation implements ProductsService {
     }
 
     @Override
-    public List<ProductDTO> getSimilarProducts(String productId) throws ProductNotFoundException, ServiceException {
+    @Cacheable("products")
+    public List<ProductDTO> getSimilarProducts(String productId) throws ServiceException {
         try {
-            if(getProductById(productId) == null) {
-                throw new ProductNotFoundException();
-            }
             List<String> similarProductIds = productDataProvider.getSimilarProductIds(productId);
+            if(similarProductIds == null) return Lists.newArrayList();
             List<ProductDTO> enrichedList = similarProductIds.stream()
                     .map(id -> {
                         try {
@@ -49,7 +47,7 @@ public class ProductsServiceImplementation implements ProductsService {
                     }).collect(Collectors.toList());
             enrichedList.removeAll(Collections.singleton(null));
             return enrichedList;
-        } catch (ProductDataProviderException | ServiceException e) {
+        } catch (ProductDataProviderException e) {
             throw new ServiceException(e);
         }
     }
